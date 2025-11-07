@@ -1,9 +1,10 @@
 __version__ = "0.2.0"  # DO NOT EDIT THIS LINE MANUALLY. LET bump2version UTILITY DO IT
 
 import subprocess
+import sys
 
 
-def format_sh(unformatted: str, _info_str: str) -> str:
+def format_crystal(unformatted: str, _info_str: str) -> str:
     unformatted_bytes = unformatted.encode()
     subprocess_kwargs = {
         "stdout": subprocess.PIPE,
@@ -12,9 +13,9 @@ def format_sh(unformatted: str, _info_str: str) -> str:
     }
 
     for cmd in (
-        ["crystal"],
-        ["docker", "run", "-i", "--rm", "crystal-lang/crystal:latest", "-"],
-        ["podman", "run", "-i", "--rm", "docker.io/crystal-lang/crystal:latest", "-"],
+        ["crystal", "tool", "format", "-"],
+        ["docker", "run", "-i", "--rm", "crystallang/crystal:latest", "crystal", "tool", "format", "-"],
+        ["podman", "run", "-i", "--rm", "docker.io/crystallang/crystal:latest", "crystal", "tool", "format", "-"],
     ):
         try:
             result = subprocess.run(cmd, **subprocess_kwargs)
