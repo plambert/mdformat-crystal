@@ -12,9 +12,9 @@ def format_sh(unformatted: str, _info_str: str) -> str:
     }
 
     for cmd in (
-        ["shfmt"],
-        ["docker", "run", "-i", "--rm", "mvdan/shfmt:latest", "-"],
-        ["podman", "run", "-i", "--rm", "docker.io/mvdan/shfmt:latest", "-"],
+        ["crystal"],
+        ["docker", "run", "-i", "--rm", "crystal-lang/crystal:latest", "-"],
+        ["podman", "run", "-i", "--rm", "docker.io/crystal-lang/crystal:latest", "-"],
     ):
         try:
             result = subprocess.run(cmd, **subprocess_kwargs)
@@ -22,8 +22,8 @@ def format_sh(unformatted: str, _info_str: str) -> str:
         except FileNotFoundError:
             pass
     else:
-        raise Exception("No shfmt executable found")
+        raise Exception("No crystal executable found")
 
     if result.returncode:
-        raise Exception("Failed to format shell code")
+        raise Exception("Failed to format crystal code")
     return result.stdout.decode()

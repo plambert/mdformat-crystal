@@ -15,24 +15,21 @@ TEST_CASES = read_fixture_file(Path(__file__).parent / "data" / "fixtures.md")
 )
 def test_fixtures(line, title, text, expected):
     """Test fixtures in tests/data/fixtures.md."""
-    md_new = mdformat.text(text, codeformatters={"sh"})
+    md_new = mdformat.text(text, codeformatters={"crystal"})
     if md_new != expected:
         print("Formatted (unexpected) Markdown below:")
         print(md_new)
     assert md_new == expected
 
 
-def test_shfmt_error(capfd):
-    """Test that any prints by shfmt go to devnull."""
-    unformatted_md = """~~~bash
-$[
+def test_crystal_error(capfd):
+    """Test that any prints by crystal go to devnull."""
+    unformatted_md = """~~~crystal
+def
 ~~~
 """
-    formatted_md = """```bash
-$[
-```
-"""
-    result = mdformat.text(unformatted_md, codeformatters={"bash"})
+    formatted_md = ""
+    result = mdformat.text(unformatted_md, codeformatters={"crystal"})
     captured = capfd.readouterr()
     assert not captured.err
     assert not captured.out
@@ -46,33 +43,35 @@ $[
     " So we only test on Linux.",
 )
 def test_docker():
-    """Test Docker fallback if shfmt not installed."""
+    """Test Docker fallback if crystal not installed."""
     input_ = """\
-~~~sh
-function func1()
-{
-echo "test"
-  }
+~~~crystal
+        class Foo
+property   foo : Int32|String
+def initialize(  @foo ); end
+end
 ~~~
 """
     expected_output = """\
-```sh
-function func1() {
-\techo "test"
-}
+```crystal
+class Foo
+  property foo : Int32 | String
+
+  def initialize(@foo); end
+end
 ```
 """
 
     unmocked_run = subprocess.run
 
-    def no_shfmt_run(*args, **kwargs):
-        """Make subprocess.run think that `shfmt` is not installed."""
-        if args[0][0] in {"shfmt", "podman"}:
+    def no_crystal_run(*args, **kwargs):
+        """Make subprocess.run think that `crystal` is not installed."""
+        if args[0][0] in {"crystal", "podman"}:
             raise FileNotFoundError
         return unmocked_run(*args, **kwargs)
 
-    with patch("mdformat_shfmt.subprocess.run", new=no_shfmt_run):
-        output = mdformat.text(input_, codeformatters={"sh"})
+    with patch("mdformat_crystal.subprocess.run", new=no_crystal_run):
+        output = mdformat.text(input_, codeformatters={"crystal"})
     assert output == expected_output
 
 
@@ -83,32 +82,34 @@ function func1() {
     " So we only test on Linux.",
 )
 def test_podman():
-    """Test Podman fallback if shfmt or docker not installed."""
+    """Test Podman fallback if crystal or docker not installed."""
     input_ = """\
-~~~sh
-function func1()
-{
-echo "test"
-  }
+~~~crystal
+        class Foo
+property   foo : Int32|String
+def initialize(  @foo ); end
+end
 ~~~
 """
     expected_output = """\
-```sh
-function func1() {
-\techo "test"
-}
+```crystal
+class Foo
+  property foo : Int32 | String
+
+  def initialize(@foo); end
+end
 ```
 """
 
     unmocked_run = subprocess.run
 
-    def no_shfmt_no_docker_run(*args, **kwargs):
-        """Make subprocess.run think that `shfmt` and `docker` are not
+    def no_crystal_no_docker_run(*args, **kwargs):
+        """Make subprocess.run think that `crysstal` and `docker` are not
         installed."""
-        if args[0][0] in {"shfmt", "docker"}:
+        if args[0][0] in {"crystal", "docker"}:
             raise FileNotFoundError
         return unmocked_run(*args, **kwargs)
 
-    with patch("mdformat_shfmt.subprocess.run", new=no_shfmt_no_docker_run):
-        output = mdformat.text(input_, codeformatters={"sh"})
+    with patch("mdformat_crystal.subprocess.run", new=no_crystal_no_docker_run):
+        output = mdformat.text(input_, codeformatters={"crystal"})
     assert output == expected_output

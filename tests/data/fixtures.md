@@ -1,15 +1,17 @@
 Simple test
 .
-~~~sh
-function func1()
-{
-echo "test"
-  }
+~~~crystal
+		class Foo
+property   foo : Int32|String
+def initialize(  @foo ); end
+end
 ~~~
 .
-```sh
-function func1() {
-	echo "test"
-}
+```crystal
+class Foo
+  property foo : Int32 | String
+
+  def initialize(@foo); end
+end
 ```
 .
