@@ -28,7 +28,10 @@ def test_crystal_error(capfd):
 def
 ~~~
 """
-    formatted_md = ""
+    formatted_md = """```crystal
+def
+```
+"""
     result = mdformat.text(unformatted_md, codeformatters={"crystal"})
     captured = capfd.readouterr()
     assert not captured.err
